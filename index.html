@@ -158,10 +158,20 @@ function startSpeech() {
 <!-- MQTT via HiveMQ Cloud -->
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script>
-  const client = mqtt.connect('wss://35fd91af598344d8b7c8c63488d09dbe.s1.eu.hivemq.cloud/mqtt', {
+  const client = mqtt.connect('wss://35fd91af598344d8b7c8c63488d09dbe.s1.eu.hivemq.cloud:8884/mqtt', {
     username: "Ahmad",
     password: "Ahmad200716@"
+      clientId: "webclient_" + Math.random().toString(16).substr(2, 8)
   });
+client.on('error', (err) => {
+  console.error('MQTT Error:', err);
+});
+client.on('reconnect', () => {
+  console.warn('MQTT Reconnect...');
+});
+client.on('close', () => {
+  console.warn('MQTT Connection Closed');
+});
 
   client.on('connect', () => {
     console.log('Terhubung ke HiveMQ Cloud');
