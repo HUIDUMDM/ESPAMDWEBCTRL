@@ -167,6 +167,11 @@ function startSpeech() {
     console.log('Terhubung ke HiveMQ Cloud');
     client.subscribe('esp/suhu');
     client.subscribe('esp/cuaca');
+    client.subscribe("esp/perintah");
+    client.subscribe("esp/voiceCommand");
+    client.subscribe("esp/brightness_tamu");
+    client.subscribe("esp/brightness_tidur");
+    client.subscribe("esp/speed_motor");
   });
 
   client.on('message', (topic, message) => {
@@ -201,5 +206,3 @@ function startSpeech() {
 </html>
 
 
-user = hivemq.webclient.1748245380623
-pass = 1e:0ASG<7u2BI!;ifUjd
