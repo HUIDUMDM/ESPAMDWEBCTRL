@@ -192,6 +192,7 @@ function startSpeech() {
   });
 
   function sendCmd(cmd) {
+  console.log("Kirim perintah: " + cmd);  // Tambahkan in
     client.publish('esp/perintah', cmd);
   }
 </script>
