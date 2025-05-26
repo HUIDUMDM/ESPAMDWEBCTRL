@@ -177,11 +177,11 @@ client.on('close', () => {
     console.log('Terhubung ke HiveMQ Cloud');
     client.subscribe('esp/suhu');
     client.subscribe('esp/cuaca');
-    client.subscribe("esp/perintah");
-    client.subscribe("esp/voiceCommand");
-    client.subscribe("esp/brightness_tamu");
-    client.subscribe("esp/brightness_tidur");
-    client.subscribe("esp/speed_motor");
+    client.publish("esp/perintah");
+    client.publish("esp/voiceCommand");
+    client.publish("esp/brightness_tamu");
+    client.publish("esp/brightness_tidur");
+    client.publish("esp/speed_motor");
   });
 
   client.on('message', (topic, message) => {
