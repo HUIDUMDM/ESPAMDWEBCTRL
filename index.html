@@ -2,216 +2,102 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>ESP Control IOT KEL1 - Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Monitoring & Kontrol ESP8266 via Firebase</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #00ffe7;
-      margin: 0;
-      padding: 0;
-    }
-    .login-box, .main-control {
-      max-width: 400px;
-      margin: 100px auto;
-      padding: 20px;
-      border: 1px solid #00ffe7;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      border-radius: 10px;
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      padding: 2rem;
       text-align: center;
     }
-    input[type=text], input[type=password], input[type=range] {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
+    h1 {
+      color: #333;
+    }
+    .sensor-box {
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    .btn {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
       border: none;
       border-radius: 5px;
-    }
-    button {
-      padding: 10px 20px;
-      border: 1px solid black;
-      border-radius: 5px;
-      background: #7289da;
-      color: white;
       cursor: pointer;
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
-      margin: 5px;
     }
-    button:active {
-      transform: scale(0.95);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) inset;
+    .on {
+      background-color: #4CAF50;
+      color: white;
     }
-    .hidden { display: none; }
-    .section {
-      margin-top: 20px;
-      padding: 10px;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      border: 1px solid #00ffe7;
-      border-radius: 10px;
-    }
-    .slider-value {
-      margin-top: 5px;
-      font-size: 14px;
+    .off {
+      background-color: #f44336;
+      color: white;
     }
   </style>
 </head>
 <body>
+  <h1>Monitoring & Kontrol ESP8266</h1>
 
-<div class="login-box" id="login-box">
-  <h2>Login</h2>
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-</div>
-
-<div class="main-control hidden" id="main-control">
-  <h2>Smart Control Dashboard K2</h2>
-
-  <div class="section">
-    <button onclick="sendCmd('motor kiri')">Motor Kiri</button>
-    <button onclick="sendCmd('motor stop')">Stop</button>
-    <button onclick="sendCmd('motor kanan')">Motor Kanan</button>
+  <div class="sensor-box">
+    <h3>Data Sensor</h3>
+    <p>Suhu: <span id="suhu">--</span> °C</p>
+    <p>Kelembaban: <span id="kelembaban">--</span> %</p>
   </div>
 
-  <div class="section">
-    <h3>Suhu: <span id="temp">--</span> °C</h3>
-    <div id="tempNotify"></div>
+  <div class="sensor-box">
+    <h3>Kontrol Lampu</h3>
+    <button class="btn on" onclick="setLampu(true)">Lampu ON</button>
+    <button class="btn off" onclick="setLampu(false)">Lampu OFF</button>
   </div>
 
-  <div class="section">
-    <h3>Cuaca: <span id="weather">--</span></h3>
-    <button onclick="sendCmd('tutup atap')">Tutup Atap</button>
-    <button onclick="sendCmd('buka atap')">Buka Atap</button>
-  </div>
+  <script type="module">
+    // Firebase SDK (modular)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      set
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-  <div class="section">
-    <h3>Perintah Suara</h3>
-    <button onclick="startSpeech()">Mulai</button>
-    <p id="voiceText">...</p>
-  </div>
+    // Ganti dengan config Firebase milikmu
+    const firebaseConfig = {
+      apiKey: "API_KEY_KAMU",
+      authDomain: "espcontrolahmad.firebaseapp.com",
+      databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "espcontrolahmad",
+      storageBucket: "espcontrolahmad.appspot.com",
+      messagingSenderId: "KODE_PENGIRIM_KAMU",
+      appId: "APP_ID_KAMU"
+    };
 
-  <div class="section">
-    <h3>Lampu Ruang Tamu</h3>
-    <button onclick="sendCmd('lampu tamu on')">ON</button>
-    <button onclick="sendCmd('lampu tamu off')">OFF</button>
-    <input type="range" min="0" max="100" oninput="setBrightness(this, 'tamu')">
-    <div class="slider-value" id="valTamu">0%</div>
-  </div>
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-  <div class="section">
-    <h3>Lampu Kamar Tidur</h3>
-    <button onclick="sendCmd('lampu tidur on')">ON</button>
-    <button onclick="sendCmd('lampu tidur off')">OFF</button>
-    <input type="range" min="0" max="100" oninput="setBrightness(this, 'tidur')">
-    <div class="slider-value" id="valTidur">0%</div>
-  </div>
+    // Referensi ke data suhu dan kelembaban
+    const suhuRef = ref(db, "sensor/suhu");
+    const kelembabanRef = ref(db, "sensor/kelembaban");
 
-  <div class="section">
-    <h3>Kecepatan Motor</h3>
-    <input type="range" min="0" max="100" oninput="setMotorSpeed(this)">
-    <div class="slider-value" id="motorSpeed">0%</div>
-  </div>
-</div>
+    // Update data suhu
+    onValue(suhuRef, (snapshot) => {
+      document.getElementById("suhu").innerText = snapshot.val();
+    });
 
-<script>
-function login() {
-  const user = document.getElementById('username').value;
-  const pass = document.getElementById('password').value;
-  if (user === 'admin' && pass === '1234') {
-    document.getElementById('login-box').classList.add('hidden');
-    document.getElementById('main-control').classList.remove('hidden');
-  } else {
-    alert('Login gagal!');
-  }
-}
+    // Update data kelembaban
+    onValue(kelembabanRef, (snapshot) => {
+      document.getElementById("kelembaban").innerText = snapshot.val();
+    });
 
-function setBrightness(slider, type) {
-  let value = slider.value;
-  document.getElementById('val' + (type === 'tamu' ? 'Tamu' : 'Tidur')).textContent = value + '%';
-  client.publish(`esp/brightness_${type}`, value.toString());
-}
-
-function setMotorSpeed(slider) {
-  let value = slider.value;
-  document.getElementById('motorSpeed').textContent = value + '%';
-  client.publish('esp/speed_motor', value.toString());
-}
-
-function startSpeech() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert('Speech recognition tidak didukung di browser ini.');
-    return;
-  }
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'id-ID';
-  recognition.onresult = function(event) {
-    let voiceText = event.results[0][0].transcript;
-    document.getElementById('voiceText').textContent = voiceText;
-    client.publish('esp/voiceCommand', voiceText);
-  };
-  recognition.start();
-}
-</script>
-
-<!-- MQTT via HiveMQ Cloud -->
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-<script>
-  const client = mqtt.connect('wss://35fd91af598344d8b7c8c63488d09dbe.s1.eu.hivemq.cloud:8884/mqtt', {
-    username: "Ahmad",
-    password: "Ahmad200716@",
-      clientId: "webclient_" + Math.random().toString(16).substr(2, 8)
-  });
-client.on('error', (err) => {
-  console.error('MQTT Error:', err);
-});
-client.on('reconnect', () => {
-  console.warn('MQTT Reconnect...');
-});
-client.on('close', () => {
-  console.warn('MQTT Connection Closed');
-});
-
-  client.on('connect', () => {
-    console.log('Terhubung ke HiveMQ Cloud');
-    client.subscribe('esp/suhu');
-    client.subscribe('esp/cuaca');
-    client.publish("esp/perintah");
-    client.publish("esp/voiceCommand");
-    client.publish("esp/brightness_tamu");
-    client.publish("esp/brightness_tidur");
-    client.publish("esp/speed_motor");
-  });
-
-  client.on('message', (topic, message) => {
-    console.log(`Pesan dari ${topic}: ${message.toString()}`);
-    if (topic === 'esp/suhu') {
-      const suhu = parseFloat(message.toString());
-      document.getElementById('temp').textContent = suhu;
-      const notif = document.getElementById('tempNotify');
-      notif.textContent = suhu > 40 ? '🔥 Suhu terlalu panas!' :
-                          suhu < 20 ? '❄️ Suhu terlalu dingin!' : '';
+    // Fungsi untuk kontrol lampu
+    window.setLampu = function(status) {
+      set(ref(db, "kontrol/lampu"), status);
     }
-    if (topic === 'esp/cuaca') {
-      const cuaca = message.toString();
-      document.getElementById('weather').textContent = cuaca;
-      if (cuaca === 'hujan') {
-        sendCmd('tutup atap');
-        setTimeout(() => sendCmd('motor stop'), 5000);
-      } else if (cuaca === 'cerah') {
-        sendCmd('buka atap');
-        setTimeout(() => sendCmd('motor stop'), 5000);
-      }
-    }
-  });
-
-  function sendCmd(cmd) {
-    console.log("Kirim perintah: " + cmd);  // Tambahkan ini
-    client.publish('esp/perintah', cmd);
-  }
-</script>
-
+  </script>
 </body>
 </html>
 
