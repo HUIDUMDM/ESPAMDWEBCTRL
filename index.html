@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>ESP Control IOT KEL1 - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #00ffe7;
+      margin: 0;
+      padding: 0;
+    }
+    .login-box, .main-control {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 20px;
+      border: 1px solid #00ffe7;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      border-radius: 10px;
+      text-align: center;
+    }
+    input[type=text], input[type=password], input[type=range] {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      border: 1px solid black;
+      border-radius: 5px;
+      background: #7289da;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      margin: 5px;
+    }
+    button:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) inset;
+    }
+    .hidden { display: none; }
+    .section {
+      margin-top: 20px;
+      padding: 10px;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      border: 1px solid #00ffe7;
+      border-radius: 10px;
+    }
+    .slider-value {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-box" id="login-box">
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<div class="main-control hidden" id="main-control">
+  <h2>Smart Control Dashboard K2</h2>
+
+  <div class="section">
+    <button onclick="sendCmd('motor kiri')">Motor Kiri</button>
+    <button onclick="sendCmd('motor stop')">Stop</button>
+    <button onclick="sendCmd('motor kanan')">Motor Kanan</button>
+  </div>
+
+  <div class="section">
+    <h3>Suhu: <span id="temp">--</span> °C</h3>
+    <div id="tempNotify"></div>
+  </div>
+
+  <div class="section">
+    <h3>Cuaca: <span id="weather">--</span></h3>
+    <button onclick="sendCmd('tutup atap')">Tutup Atap</button>
+    <button onclick="sendCmd('buka atap')">Buka Atap</button>
+  </div>
+
+  <div class="section">
+    <h3>Lampu Ruang Tamu</h3>
+    <button onclick="sendCmd('lampu tamu on')">ON</button>
+    <button onclick="sendCmd('lampu tamu off')">OFF</button>
+    <input type="range" min="0" max="100" oninput="setBrightness(this, 'tamu')">
+    <div class="slider-value" id="valTamu">0%</div>
+  </div>
+
+  <div class="section">
+    <h3>Lampu Kamar Tidur</h3>
+    <button onclick="sendCmd('lampu tidur on')">ON</button>
+    <button onclick="sendCmd('lampu tidur off')">OFF</button>
+    <input type="range" min="0" max="100" oninput="setBrightness(this, 'tidur')">
+    <div class="slider-value" id="valTidur">0%</div>
+  </div>
+
+  <div class="section">
+    <h3>Kecepatan Motor</h3>
+    <input type="range" min="0" max="100" oninput="setMotorSpeed(this)">
+    <div class="slider-value" id="motorSpeed">0%</div>
+  </div>
+</div>
+
+<script type="module">
+  // Import Firebase
+  import { initializeApp } from "firebase/app";
+  import { getDatabase, ref, set } from "firebase/database";
+
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
+    authDomain: "espcontrolahmad.firebaseapp.com",
+    databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "espcontrolahmad",
+    storageBucket: "espcontrolahmad.firebasestorage.app",
+    messagingSenderId: "333416906321",
+    appId: "1:333416906321:web:ad0a2188bb38fa09b2c270",
+    measurementId: "G-9RBGT0WHHE"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  function login() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    if (user === 'admin' && pass === '1234') {
+      document.getElementById('login-box').classList.add('hidden');
+      document.getElementById('main-control').classList.remove('hidden');
+    } else {
+      alert('Login gagal!');
+    }
+  }
+
+  function setBrightness(slider, type) {
+    let value = slider.value;
+    document.getElementById('val' + (type === 'tamu' ? 'Tamu' : 'Tidur')).textContent = value + '%';
+    set(ref(database, `brightness/${type}`), value);
+  }
+
+  function setMotorSpeed(slider) {
+    let value = slider.value;
+    document.getElementById('motorSpeed').textContent = value + '%';
+    set(ref(database, 'motorSpeed'), value);
+  }
+
+  function sendCmd(cmd) {
+    console.log("Kirim perintah: " + cmd);
+    set(ref(database, 'commands'), cmd);
+  }
+</script>
+
+</body>
+</html>
+
