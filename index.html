@@ -2,8 +2,13 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>ESP Control IOT KEL1 - Login</title>
+  <title>ESP Firebase Control</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -17,7 +22,7 @@
       margin: 100px auto;
       padding: 20px;
       border: 1px solid #00ffe7;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      background: #1c1c1c;
       border-radius: 10px;
       text-align: center;
     }
@@ -30,35 +35,24 @@
     }
     button {
       padding: 10px 20px;
-      border: 1px solid black;
       border-radius: 5px;
       background: #7289da;
       color: white;
+      border: none;
       cursor: pointer;
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
       margin: 5px;
-    }
-    button:active {
-      transform: scale(0.95);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) inset;
     }
     .hidden { display: none; }
     .section {
       margin-top: 20px;
       padding: 10px;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      border: 1px solid #00ffe7;
+      background: #2e2e2e;
       border-radius: 10px;
     }
     .slider-value {
       margin-top: 5px;
-      font-size: 14px;
     }
   </style>
-  <!-- Firebase CDN -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
 </head>
 <body>
 
@@ -70,7 +64,7 @@
 </div>
 
 <div class="main-control hidden" id="main-control">
-  <h2>Smart Control Dashboard K2</h2>
+  <h2>Kontrol Firebase</h2>
 
   <div class="section">
     <button onclick="sendCmd('motor kiri')">Motor Kiri</button>
@@ -87,6 +81,12 @@
     <h3>Cuaca: <span id="weather">--</span></h3>
     <button onclick="sendCmd('tutup atap')">Tutup Atap</button>
     <button onclick="sendCmd('buka atap')">Buka Atap</button>
+  </div>
+
+  <div class="section">
+    <h3>Perintah Suara</h3>
+    <button onclick="startSpeech()">Mulai</button>
+    <p id="voiceText">...</p>
   </div>
 
   <div class="section">
@@ -112,8 +112,23 @@
   </div>
 </div>
 
-<script type="module">
-    function login() {
+<script>
+  // Firebase Konfigurasi
+const firebaseConfig = {
+  apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
+  authDomain: "espcontrolahmad.firebaseapp.com",
+  databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "espcontrolahmad",
+  storageBucket: "espcontrolahmad.firebasestorage.app",
+  messagingSenderId: "333416906321",
+  appId: "1:333416906321:web:ad0a2188bb38fa09b2c270",
+  measurementId: "G-9RBGT0WHHE"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function login() {
     const user = document.getElementById('username').value;
     const pass = document.getElementById('password').value;
     if (user === 'admin' && pass === '1234') {
@@ -123,45 +138,56 @@
       alert('Login gagal!');
     }
   }
-  // Import Firebase
-  import { initializeApp } from "firebase/app";
-  import { getDatabase, ref, set } from "firebase/database";
 
-  // Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
-    authDomain: "espcontrolahmad.firebaseapp.com",
-    databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "espcontrolahmad",
-    storageBucket: "espcontrolahmad.firebasestorage.app",
-    messagingSenderId: "333416906321",
-    appId: "1:333416906321:web:ad0a2188bb38fa09b2c270",
-    measurementId: "G-9RBGT0WHHE"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-
+  function sendCmd(cmd) {
+    db.ref('kontrol/perintah').set(cmd);
+  }
 
   function setBrightness(slider, type) {
     let value = slider.value;
     document.getElementById('val' + (type === 'tamu' ? 'Tamu' : 'Tidur')).textContent = value + '%';
-    set(ref(database, `brightness/${type}`), value);
+    db.ref('kontrol/brightness_' + type).set(Number(value));
   }
 
   function setMotorSpeed(slider) {
     let value = slider.value;
     document.getElementById('motorSpeed').textContent = value + '%';
-    set(ref(database, 'motorSpeed'), value);
+    db.ref('kontrol/speed_motor').set(Number(value));
   }
 
-  function sendCmd(cmd) {
-    console.log("Kirim perintah: " + cmd);
-    set(ref(database, 'commands'), cmd);
+  function startSpeech() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert('Browser tidak mendukung speech recognition.');
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'id-ID';
+    recognition.onresult = function(event) {
+      const voiceText = event.results[0][0].transcript;
+      document.getElementById('voiceText').textContent = voiceText;
+      db.ref('kontrol/voiceCommand').set(voiceText);
+    };
+    recognition.start();
   }
+
+  // Real-time listener (opsional)
+  db.ref('sensor/suhu').on('value', snapshot => {
+    const suhu = snapshot.val();
+    document.getElementById('temp').textContent = suhu;
+    const notif = document.getElementById('tempNotify');
+    notif.textContent = suhu > 40 ? '🔥 Suhu terlalu panas!' :
+                        suhu < 20 ? '❄️ Suhu terlalu dingin!' : '';
+  });
+
+  db.ref('sensor/cuaca').on('value', snapshot => {
+    const cuaca = snapshot.val();
+    document.getElementById('weather').textContent = cuaca;
+    if (cuaca === 'hujan') {
+      sendCmd('tutup atap');
+      setTimeout(() => sendCmd('motor stop'), 5000);
+    } else if (cuaca === 'cerah') {
+      sendCmd('buka atap');
+      setTimeout(() => sendCmd('motor stop'), 5000);
+    }
+  });
 </script>
-
 </body>
 </html>
-
