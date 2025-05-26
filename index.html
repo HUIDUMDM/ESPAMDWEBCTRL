@@ -55,6 +55,10 @@
       font-size: 14px;
     }
   </style>
+  <!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
 </head>
 <body>
 
@@ -109,6 +113,16 @@
 </div>
 
 <script type="module">
+    function login() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    if (user === 'admin' && pass === '1234') {
+      document.getElementById('login-box').classList.add('hidden');
+      document.getElementById('main-control').classList.remove('hidden');
+    } else {
+      alert('Login gagal!');
+    }
+  }
   // Import Firebase
   import { initializeApp } from "firebase/app";
   import { getDatabase, ref, set } from "firebase/database";
@@ -129,16 +143,6 @@
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
 
-  function login() {
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    if (user === 'admin' && pass === '1234') {
-      document.getElementById('login-box').classList.add('hidden');
-      document.getElementById('main-control').classList.remove('hidden');
-    } else {
-      alert('Login gagal!');
-    }
-  }
 
   function setBrightness(slider, type) {
     let value = slider.value;
