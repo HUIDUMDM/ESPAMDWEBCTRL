@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>ESP Firebase Control</title>
+  <title>ESPAHMADFirebase Control</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Firebase CDN -->
@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
   <style>
+    
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
@@ -42,6 +43,10 @@
       cursor: pointer;
       margin: 5px;
     }
+       button:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) inset;
+    }
     .hidden { display: none; }
     .section {
       margin-top: 20px;
@@ -52,23 +57,20 @@
     .slider-value {
       margin-top: 5px;
     }
-      .button:active {
-    transform: scale(0.95);
-    background-color: #ccc;
-      }
+
   </style>
 </head>
 <body>
 
 <div class="login-box" id="login-box">
-  <h2>Login</h2>
+  <h2>Login_ByKel1</h2>
   <input type="text" id="username" placeholder="Username">
   <input type="password" id="password" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
 <div class="main-control hidden" id="main-control">
-  <h2>Kontrol Firebase</h2>
+  <h2>Kontrol_espAMDKel1_Firebase</h2>
 
   <div class="section">
     <button onclick="sendCmd('motor kiri')">Motor Kiri</button>
