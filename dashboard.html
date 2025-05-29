@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard Control</title>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  rel="stylesheet"
+/>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  :root {
+    --primary-color: #2a9d8f;
+    --secondary-color: #e76f51;
+    --background-color: #f0f2f5;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --text-color: #264653;
+    --accent-color: #264653;
+    --hover-bg: #e0f2f1;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  .container {
+    width: 420px;
+    background: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: rgba(42, 157, 143, 0.85);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    margin-top: 5%;
+    border-radius: 0 0 15px 15px;
+    user-select: none;
+  }
+  header .info-block {
+    flex: 1;
+  }
+  header .info-block i {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+    display: block;
+  }
+  header .info-block .label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    opacity: 0.85;
+  }
+  header .info-block .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  main {
+    display: flex;
+    background: rgba(255, 255, 255, 0.85);
+    margin-top: 30%;
+    border-radius: 0 0 15px 15px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.07);
+    user-select: none;
+  }
+  .control-button {
+    flex: 1;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    border-right: 1px solid #ddd;
+    transition: background-color 0.3s, transform 0.1s ease, box-shadow 0.1s ease;
+    user-select: none;
+  }
+  .control-button:last-child {
+    border-right: none;
+  }
+  .control-button:hover {
+    background-color: var(--hover-bg);
+  }
+  .control-button i {
+    font-size: 3.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 12px;
+    transition: color 0.3s;
+    pointer-events: none;
+  }
+  .control-button:hover i {
+    color: var(--primary-color);
+  }
+  /* Click press effect */
+  .control-button:active {
+    transform: scale(0.92);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    background-color: #cde7e4 !important;
+  }
+  .control-button .label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    pointer-events: none;
+  }
+  .page {
+    display: none;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+    padding: 30px 25px;
+    max-width: 420px;
+    min-height: 380px;
+  }
+  .page.active {
+    display: flex;
+  }
+  .page h2 {
+    margin-bottom: 25px;
+    color: var(--primary-color);
+  }
+  .back-button {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 10px 17px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background-color 0.3s;
+  }
+  .back-button:hover {
+    background: #d65a42;
+  }
+  /* Control page content placeholders */
+  .control-content {
+    flex: 1;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+</style>
+</head>
+<body>
+  <div class="container" id="dashboard-page">
+    <header>
+      <div class="info-block" title="Suhu / Temperature">
+        <i class="fa-solid fa-thermometer-half"></i>
+        <div class="label">Suhu</div>
+        <div class="value" id="temperature">-- °C</div>
+      </div>
+      <div class="info-block" title="Cuaca / Weather">
+        <i id="weather-icon" class="fa-solid fa-cloud"></i>
+        <div class="label">Cuaca</div>
+        <div class="value" id="weather-text">--</div>
+      </div>
+      <div class="info-block" title="Kelembapan / Humidity">
+        <i class="fa-solid fa-wind"></i>
+        <div class="label">Kelembapan</div>
+        <div class="value" id="humidity">-- %</div>
+      </div>
+    </header>
+    <main>
+      <div class="control-button" id="btn-motor" tabindex="0" role="button" aria-label="Control Motor">
+        <i class="fa-solid fa-motorcycle"></i>
+        <div class="label">Control Motor</div>
+      </div>
+      <div class="control-button" id="btn-lamp" tabindex="0" role="button" aria-label="Control Lampu">
+        <i class="fa-solid fa-lightbulb"></i>
+        <div class="label">Control Lampu</div>
+      </div>
+    </main>
+  </div>
+
+  <div class="page" id="motor-control-page">
+    <button class="back-button" id="back-from-motor">← Dashboard</button>
+    <h2>Control Motor DC</h2>
+    <div class="control-content">
+      <!-- Placeholder for motor control functions -->
+      <p>Here you can control the Motor DC.</p>
+    </div>
+  </div>
+
+  <div class="page" id="lamp-control-page">
+    <button class="back-button" id="back-from-lamp">← Dashboard</button>
+    <h2>Control Lampu</h2>
+    <div class="control-content">
+      <!-- Placeholder for lamp control functions -->
+      <p>Here you can control the Lampu.</p>
+    </div>
+  </div>
+
+<script>
+  // Simulated data for demo
+  const weatherData = {
+    temperature: 27,
+    rain: true,
+    humidity: 75,
+  };
+
+  // Function to update dashboard display
+  function updateDashboard() {
+    document.getElementById('temperature').textContent = weatherData.temperature + ' °C';
+    const weatherIconEl = document.getElementById('weather-icon');
+    const weatherTextEl = document.getElementById('weather-text');
+    if (weatherData.rain) {
+      weatherIconEl.className = 'fa-solid fa-cloud-rain';
+      weatherTextEl.textContent = 'Hujan';
+    } else {
+      weatherIconEl.className = 'fa-solid fa-cloud';
+      weatherTextEl.textContent = 'Tidak hujan';
+    }
+    document.getElementById('humidity').textContent = weatherData.humidity + ' %';
+  }
+
+  // Navigation functions
+  const dashboardPage = document.getElementById('dashboard-page');
+  const motorPage = document.getElementById('motor-control-page');
+  const lampPage = document.getElementById('lamp-control-page');
+
+  function showPage(page) {
+    dashboardPage.style.display = 'none';
+    motorPage.classList.remove('active');
+    lampPage.classList.remove('active');
+    if (page === 'motor') {
+      motorPage.classList.add('active');
+    } else if (page === 'lamp') {
+      lampPage.classList.add('active');
+    } else {
+      dashboardPage.style.display = 'flex';
+    }
+  }
+
+  document.getElementById('btn-motor').addEventListener('click', () => {
+    showPage('motor');
+  });
+  document.getElementById('btn-lamp').addEventListener('click', () => {
+    showPage('lamp');
+  });
+
+  document.getElementById('back-from-motor').addEventListener('click', () => {
+    showPage('dashboard');
+  });
+  document.getElementById('back-from-lamp').addEventListener('click', () => {
+    showPage('dashboard');
+  });
+
+  // Keyboard accessibility for control buttons
+  document.getElementById('btn-motor').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      showPage('motor');
+    }
+  });
+  document.getElementById('btn-lamp').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      showPage('lamp');
+    }
+  });
+
+  // Initialize dashboard
+  updateDashboard();
+</script>
+</body>
+</html>
+
+
