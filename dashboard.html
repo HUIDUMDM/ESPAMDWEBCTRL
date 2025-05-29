@@ -23,28 +23,26 @@
   * {
     box-sizing: border-box;
   }
- body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background-image: url('images/robt.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  color: white;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  min-height: 100vh;
-}
-
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+  }
   .container {
     width: 420px;
     background: var(--card-bg);
     border-radius: 15px;
-    box-shadow: 0 12px 20px rgba(0,0,0,0.10);
-    overflow: hidden;
+    box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+    overflow: visible;
     display: flex;
     flex-direction: column;
+    position: relative;
+    padding-bottom: 140px; /* space for mic area */
   }
   header {
     background: rgba(42, 157, 143, 0.85);
@@ -54,7 +52,7 @@
     justify-content: space-around;
     text-align: center;
     margin-top: 5%;
-    border-radius: 0 0 15px 15px;
+    border-radius: 15px 15px 0 0;
     user-select: none;
   }
   header .info-block {
@@ -75,18 +73,18 @@
     font-size: 1.5rem;
     font-weight: 700;
   }
-main {
-  background: rgba(255, 255, 255, 0.85);
-  margin-top: 80px;
 
-}
-
-
-
-
+  main {
+    display: flex;
+    background: rgba(255, 255, 255, 0.85);
+    margin-top: 300px;
+    border-radius: 0 0 15px 15px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.07);
+    user-select: none;
+  }
   .control-button {
     flex: 1;
-     padding: 34px 30px; /* dikurangi 20% dari 30px dan 20px */
+    padding: 10px 20px;
     text-align: center;
     cursor: pointer;
     border-right: 1px solid #ddd;
@@ -100,7 +98,7 @@ main {
     background-color: var(--hover-bg);
   }
   .control-button i {
-     font-size: 3.2rem; /* sekitar 20% lebih kecil */
+    font-size: 3.5rem;
     color: var(--secondary-color);
     margin-bottom: 12px;
     transition: color 0.3s;
@@ -117,7 +115,7 @@ main {
   }
   .control-button .label {
     font-weight: 600;
-    font-size: 1.88rem; /* 20% lebih kecil */
+    font-size: 1.1rem;
     color: var(--accent-color);
     pointer-events: none;
   }
@@ -163,6 +161,62 @@ main {
     justify-content: center;
     align-items: center;
   }
+
+  /* Mic area container - centered vertically in container */
+  .mic-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+    width: 100%;
+    max-width: 200px;
+  }
+
+  #mic-button {
+    background: var(--secondary-color);
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s;
+  }
+  #mic-button:hover {
+    background: #cf533e;
+  }
+  #mic-button.listening {
+    background: #1f7a60;
+    animation: pulse 1.2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 10px 4px rgba(31,122,96,0.7); }
+    50% { box-shadow: 0 0 20px 8px rgba(31,122,96,1); }
+    100% { box-shadow: 0 0 10px 4px rgba(31,122,96,0.7); }
+  }
+
+  #transcript-box {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(42, 157, 143, 0.15);
+    border-radius: 12px;
+    font-style: italic;
+    font-size: 1rem;
+    min-height: 40px;
+    color: var(--accent-color);
+    text-align: center;
+    user-select: text;
+    width: 100%;
+  }
 </style>
 </head>
 <body>
@@ -184,6 +238,14 @@ main {
         <div class="value" id="humidity">-- %</div>
       </div>
     </header>
+
+    <div class="mic-container" aria-label="Voice recognition control">
+      <button id="mic-button" title="Start Voice Recognition" aria-label="Start Voice Recognition">
+        <i class="fa-solid fa-microphone"></i>
+      </button>
+      <div id="transcript-box" aria-live="polite" aria-atomic="true">Tekan tombol mikrofon dan mulai bicara...</div>
+    </div>
+
     <main>
       <div class="control-button" id="btn-motor" tabindex="0" role="button" aria-label="Control Motor">
         <i class="fa-solid fa-motorcycle"></i>
@@ -285,8 +347,60 @@ main {
 
   // Initialize dashboard
   updateDashboard();
+
+  // Voice Recognition Setup
+  const micButton = document.getElementById('mic-button');
+  const transcriptBox = document.getElementById('transcript-box');
+
+  // Check browser support
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    transcriptBox.textContent = "Browser Anda tidak mendukung Voice Recognition.";
+    micButton.disabled = true;
+    micButton.title = "Voice Recognition not supported";
+  } else {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'id-ID'; // Bahasa Indonesia
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    let recognizing = false;
+
+    micButton.addEventListener('click', () => {
+      if (recognizing) {
+        recognition.stop();
+        return;
+      }
+      recognition.start();
+    });
+
+    recognition.onstart = () => {
+      recognizing = true;
+      micButton.classList.add('listening');
+      transcriptBox.textContent = "Mendengarkan...";
+    };
+
+    recognition.onend = () => {
+      recognizing = false;
+      micButton.classList.remove('listening');
+      if (transcriptBox.textContent === "Mendengarkan...") {
+        transcriptBox.textContent = "Tekan tombol mikrofon dan mulai bicara...";
+      }
+    };
+
+    recognition.onerror = (event) => {
+      recognizing = false;
+      micButton.classList.remove('listening');
+      transcriptBox.textContent = 'Error: ' + event.error;
+    };
+
+    recognition.onresult = (event) => {
+      const speechResult = event.results[0][0].transcript;
+      transcriptBox.textContent = 'Anda berkata: ' + speechResult;
+    };
+  }
 </script>
 </body>
 </html>
-
 
