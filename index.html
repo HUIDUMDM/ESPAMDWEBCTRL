@@ -28,7 +28,7 @@
       margin: 100px auto;
       padding: 20px;
       border: 1px solid #00ffe7;
-      background: #1c1c1c;
+      background-color: rgba(0, 0, 0, 0.4); /* hitam dengan 60% opasitas */
       border-radius: 10px;
       text-align: center;
     }
@@ -142,7 +142,7 @@ const firebaseConfig = {
   function login() {
     const user = document.getElementById('username').value;
     const pass = document.getElementById('password').value;
-    if (user === 'admin' && pass === '1234') {
+    if (user === 'groupone' && pass === 'xitea') {
       document.getElementById('login-box').classList.add('hidden');
       document.getElementById('main-control').classList.remove('hidden');
     } else {
