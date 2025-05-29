@@ -77,14 +77,14 @@
   main {
     display: flex;
     background: rgba(255, 255, 255, 0.85);
-    margin-top: 300px;
+    margin-top: 30px;
     border-radius: 0 0 15px 15px;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.07);
     user-select: none;
   }
   .control-button {
     flex: 1;
-    padding: 10px 20px;
+    padding: 30px 20px;
     text-align: center;
     cursor: pointer;
     border-right: 1px solid #ddd;
@@ -118,48 +118,6 @@
     font-size: 1.1rem;
     color: var(--accent-color);
     pointer-events: none;
-  }
-  .page {
-    display: none;
-    flex-direction: column;
-    background: var(--card-bg);
-    border-radius: 15px;
-    box-shadow: 0 12px 20px rgba(0,0,0,0.15);
-    padding: 30px 25px;
-    max-width: 420px;
-    min-height: 380px;
-  }
-  .page.active {
-    display: flex;
-  }
-  .page h2 {
-    margin-bottom: 25px;
-    color: var(--primary-color);
-  }
-  .back-button {
-    background: var(--secondary-color);
-    color: white;
-    border: none;
-    padding: 10px 17px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    align-self: flex-start;
-    transition: background-color 0.3s;
-  }
-  .back-button:hover {
-    background: #d65a42;
-  }
-  /* Control page content placeholders */
-  .control-content {
-    flex: 1;
-    font-size: 1.1rem;
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
   }
 
   /* Mic area container - centered vertically in container */
@@ -220,6 +178,10 @@
 </style>
 </head>
 <body>
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
   <div class="container" id="dashboard-page">
     <header>
       <div class="info-block" title="Suhu / Temperature">
@@ -227,15 +189,15 @@
         <div class="label">Suhu</div>
         <div class="value" id="temperature">-- °C</div>
       </div>
-      <div class="info-block" title="Cuaca / Weather">
-        <i id="weather-icon" class="fa-solid fa-cloud"></i>
-        <div class="label">Cuaca</div>
-        <div class="value" id="weather-text">--</div>
-      </div>
       <div class="info-block" title="Kelembapan / Humidity">
         <i class="fa-solid fa-wind"></i>
         <div class="label">Kelembapan</div>
         <div class="value" id="humidity">-- %</div>
+      </div>
+      <div class="info-block" title="Cuaca / Weather">
+        <i id="weather-icon" class="fa-solid fa-cloud"></i>
+        <div class="label">Cuaca</div>
+        <div class="value" id="weather-text">--</div>
       </div>
     </header>
 
@@ -258,149 +220,109 @@
     </main>
   </div>
 
-  <div class="page" id="motor-control-page">
+  <div class="page" id="motor-control-page" style="display:none;">
     <button class="back-button" id="back-from-motor">← Dashboard</button>
     <h2>Control Motor DC</h2>
     <div class="control-content">
-      <!-- Placeholder for motor control functions -->
       <p>Here you can control the Motor DC.</p>
     </div>
   </div>
 
-  <div class="page" id="lamp-control-page">
+  <div class="page" id="lamp-control-page" style="display:none;">
     <button class="back-button" id="back-from-lamp">← Dashboard</button>
     <h2>Control Lampu</h2>
     <div class="control-content">
-      <!-- Placeholder for lamp control functions -->
       <p>Here you can control the Lampu.</p>
     </div>
   </div>
 
 <script>
-  // Simulated data for demo
-  const weatherData = {
-    temperature: 27,
-    rain: true,
-    humidity: 75,
+  // Firebase Konfigurasi
+  const firebaseConfig = {
+    apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
+    authDomain: "espcontrolahmad.firebaseapp.com",
+    databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "espcontrolahmad",
+    storageBucket: "espcontrolahmad.firebasestorage.app",
+    messagingSenderId: "333416906321",
+    appId: "1:333416906321:web:ad0a2188bb38fa09b2c270",
+    measurementId: "G-9RBGT0WHHE"
   };
 
-  // Function to update dashboard display
-  function updateDashboard() {
-    document.getElementById('temperature').textContent = weatherData.temperature + ' °C';
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Real-time listener for temperature
+  db.ref('sensor/suhu').on('value', snapshot => {
+    const suhu = snapshot.val();
+    document.getElementById('temperature').textContent = suhu + ' °C';
+  });
+
+  // Real-time listener for humidity
+  db.ref('sensor/kelembaban').on('value', snapshot => {
+    const kelembaban = snapshot.val();
+    document.getElementById('humidity').textContent = kelembaban + ' %';
+  });
+
+  // Real-time listener for weather
+  db.ref('sensor/cuaca').on('value', snapshot => {
+    const cuaca = snapshot.val();
+    document.getElementById('weather-text').textContent = cuaca;
     const weatherIconEl = document.getElementById('weather-icon');
-    const weatherTextEl = document.getElementById('weather-text');
-    if (weatherData.rain) {
+    if (cuaca === 'hujan') {
       weatherIconEl.className = 'fa-solid fa-cloud-rain';
-      weatherTextEl.textContent = 'Hujan';
+    } else if (cuaca === 'cerah') {
+      weatherIconEl.className = 'fa-solid fa-cloud';
     } else {
       weatherIconEl.className = 'fa-solid fa-cloud';
-      weatherTextEl.textContent = 'Tidak hujan';
     }
-    document.getElementById('humidity').textContent = weatherData.humidity + ' %';
+  });
+
+  // Voice Command Functionality
+  function startSpeech() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert('Browser tidak mendukung speech recognition.');
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'id-ID';
+    recognition.onresult = function(event) {
+      const voiceText = event.results[0][0].transcript;
+      document.getElementById('transcript-box').textContent = voiceText;
+      db.ref('kontrol/voiceCommand').set(voiceText);
+    };
+    recognition.start();
   }
 
-  // Navigation functions
+  // Start voice recognition on mic button click
+  document.getElementById('mic-button').addEventListener('click', startSpeech);
+
+  // Navigation for control buttons
   const dashboardPage = document.getElementById('dashboard-page');
   const motorPage = document.getElementById('motor-control-page');
   const lampPage = document.getElementById('lamp-control-page');
 
-  function showPage(page) {
-    dashboardPage.style.display = 'none';
-    motorPage.classList.remove('active');
-    lampPage.classList.remove('active');
-    if (page === 'motor') {
-      motorPage.classList.add('active');
-    } else if (page === 'lamp') {
-      lampPage.classList.add('active');
-    } else {
-      dashboardPage.style.display = 'flex';
-    }
-  }
-
   document.getElementById('btn-motor').addEventListener('click', () => {
-    showPage('motor');
+    dashboardPage.style.display = 'none';
+    motorPage.style.display = 'flex';
   });
+
   document.getElementById('btn-lamp').addEventListener('click', () => {
-    showPage('lamp');
+    dashboardPage.style.display = 'none';
+    lampPage.style.display = 'flex';
   });
 
   document.getElementById('back-from-motor').addEventListener('click', () => {
-    showPage('dashboard');
+    motorPage.style.display = 'none';
+    dashboardPage.style.display = 'flex';
   });
+
   document.getElementById('back-from-lamp').addEventListener('click', () => {
-    showPage('dashboard');
+    lampPage.style.display = 'none';
+    dashboardPage.style.display = 'flex';
   });
-
-  // Keyboard accessibility for control buttons
-  document.getElementById('btn-motor').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      showPage('motor');
-    }
-  });
-  document.getElementById('btn-lamp').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      showPage('lamp');
-    }
-  });
-
-  // Initialize dashboard
-  updateDashboard();
-
-  // Voice Recognition Setup
-  const micButton = document.getElementById('mic-button');
-  const transcriptBox = document.getElementById('transcript-box');
-
-  // Check browser support
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    transcriptBox.textContent = "Browser Anda tidak mendukung Voice Recognition.";
-    micButton.disabled = true;
-    micButton.title = "Voice Recognition not supported";
-  } else {
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'id-ID'; // Bahasa Indonesia
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    let recognizing = false;
-
-    micButton.addEventListener('click', () => {
-      if (recognizing) {
-        recognition.stop();
-        return;
-      }
-      recognition.start();
-    });
-
-    recognition.onstart = () => {
-      recognizing = true;
-      micButton.classList.add('listening');
-      transcriptBox.textContent = "Mendengarkan...";
-    };
-
-    recognition.onend = () => {
-      recognizing = false;
-      micButton.classList.remove('listening');
-      if (transcriptBox.textContent === "Mendengarkan...") {
-        transcriptBox.textContent = "Tekan tombol mikrofon dan mulai bicara...";
-      }
-    };
-
-    recognition.onerror = (event) => {
-      recognizing = false;
-      micButton.classList.remove('listening');
-      transcriptBox.textContent = 'Error: ' + event.error;
-    };
-
-    recognition.onresult = (event) => {
-      const speechResult = event.results[0][0].transcript;
-      transcriptBox.textContent = 'Anda berkata: ' + speechResult;
-    };
-  }
 </script>
 </body>
 </html>
+
+
 
