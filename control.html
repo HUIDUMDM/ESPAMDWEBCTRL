@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kontrol ESPAHMAD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #001f3f;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    .main-control {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      border: 1px solid #00ffe7;
+      background-color: rgba(0, 0, 50, 0.7);
+      border-radius: 10px;
+    }
+    button, input[type=range] {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    .section {
+      margin-top: 20px;
+      padding: 10px;
+      background: #2e2e2e;
+      border-radius: 10px;
+    }
+    .slider-value {
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+<div class="main-control hidden" id="main-control">
+  <h2>CONTROL PANEL</h2>
+
+  <div class="section">
+    <button onclick="sendCmd('motor kiri')">Motor Kiri</button>
+    <button onclick="sendCmd('motor stop')">Stop</button>
+    <button onclick="sendCmd('motor kanan')">Motor Kanan</button>
+  </div>
+
+  <div class="section">
+    <h3>Suhu: <span id="temp">--</span> °C</h3>
+    <div id="tempNotify"></div>
+  </div>
+
+  <div class="section">
+    <h3>Cuaca: <span id="weather">--</span></h3>
+    <button onclick="sendCmd('tutup atap')">Tutup Atap</button>
+    <button onclick="sendCmd('buka atap')">Buka Atap</button>
+  </div>
+
+  <div class="section">
+    <h3>Perintah Suara</h3>
+    <button onclick="startSpeech()">Mulai</button>
+    <p id="voiceText">...</p>
+  </div>
+
+  <div class="section">
+    <h3>Lampu Ruang Tamu</h3>
+    <button onclick="sendCmd('lampu tamu on')">ON</button>
+    <button onclick="sendCmd('lampu tamu off')">OFF</button>
+    <input type="range" min="0" max="100" oninput="setBrightness(this, 'tamu')">
+    <div class="slider-value" id="valTamu">0%</div>
+  </div>
+
+  <div class="section">
+    <h3>Lampu Kamar Tidur</h3>
+    <button onclick="sendCmd('lampu tidur on')">ON</button>
+    <button onclick="sendCmd('lampu tidur off')">OFF</button>
+    <input type="range" min="0" max="100" oninput="setBrightness(this, 'tidur')">
+    <div class="slider-value" id="valTidur">0%</div>
+  </div>
+
+  <div class="section">
+    <h3>Kecepatan Motor</h3>
+    <input type="range" min="0" max="100" oninput="setMotorSpeed(this)">
+    <div class="slider-value" id="motorSpeed">0%</div>
+  </div>
+</div>
+
+<script>
+  // Firebase Konfigurasi
+const firebaseConfig = {
+  apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
+  authDomain: "espcontrolahmad.firebaseapp.com",
+  databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "espcontrolahmad",
+  storageBucket: "espcontrolahmad.firebasestorage.app",
+  messagingSenderId: "333416906321",
+  appId: "1:333416906321:web:ad0a2188bb38fa09b2c270",
+  measurementId: "G-9RBGT0WHHE"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+
+
+  function sendCmd(cmd) {
+    db.ref('kontrol/perintah').set(cmd);
+  }
+
+  function setBrightness(slider, type) {
+    let value = slider.value;
+    document.getElementById('val' + (type === 'tamu' ? 'Tamu' : 'Tidur')).textContent = value + '%';
+    db.ref('kontrol/brightness_' + type).set(Number(value));
+  }
+
+  function setMotorSpeed(slider) {
+    let value = slider.value;
+    document.getElementById('motorSpeed').textContent = value + '%';
+    db.ref('kontrol/speed_motor').set(Number(value));
+  }
+
+  function startSpeech() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert('Browser tidak mendukung speech recognition.');
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'id-ID';
+    recognition.onresult = function(event) {
+      const voiceText = event.results[0][0].transcript;
+      document.getElementById('voiceText').textContent = voiceText;
+      db.ref('kontrol/voiceCommand').set(voiceText);
+    };
+    recognition.start();
+  }
+
+  // Real-time listener (opsional)
+  db.ref('sensor/suhu').on('value', snapshot => {
+    const suhu = snapshot.val();
+    document.getElementById('temp').textContent = suhu;
+    const notif = document.getElementById('tempNotify');
+    notif.textContent = suhu > 40 ? '🔥 Suhu terlalu panas!' :
+                        suhu < 20 ? '❄️ Suhu terlalu dingin!' : '';
+  });
+
+  db.ref('sensor/cuaca').on('value', snapshot => {
+    const cuaca = snapshot.val();
+    document.getElementById('weather').textContent = cuaca;
+    if (cuaca === 'hujan') {
+      sendCmd('tutup atap');
+      setTimeout(() => sendCmd('motor stop'), 5000);
+    } else if (cuaca === 'cerah') {
+      sendCmd('buka atap');
+      setTimeout(() => sendCmd('motor stop'), 5000);
+    }
+  });
+</script>
+</body>
+</html>
+
