@@ -12,16 +12,24 @@
   <style>
     
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          background-image: url('images/BACK.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     height: 100vh;
       color: white;
       margin: 0;
       padding: 0;
+    }
+        /* Hanya untuk halaman login */
+    body.login-page {
+      background-image: url('images/BACK.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    /* Untuk halaman kontrol */
+    body.control-page {
+      background-color: #007bff;
     }
     .login-box, .main-control {
       max-width: 400px;
@@ -143,6 +151,7 @@ const firebaseConfig = {
     const user = document.getElementById('username').value;
     const pass = document.getElementById('password').value;
     if (user === 'groupone' && pass === 'xitea') {
+      document.body.className = "control-page";
       document.getElementById('login-box').classList.add('hidden');
       document.getElementById('main-control').classList.remove('hidden');
     } else {
