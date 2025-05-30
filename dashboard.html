@@ -241,12 +241,21 @@
       <p>Here you can control the Lampu.</p>
     </div>
   </div>
- <button onclick="logout()">Logout</button>
+    
+<div class="control-button" id="btn-logout" tabindex="0" role="button" aria-label="Logout">
+  <i class="fa-solid fa-right-from-bracket"></i>
+  <div class="label">Logout</div>
+</div>
+
 <script>
       // Cek apakah sudah login
     if (localStorage.getItem("loggedIn") !== "true") {
       window.location.href = "index.html";
     }
+    // Logout saat tombol logout diklik
+  document.getElementById("btn-logout").addEventListener("click", function () {
+    localStorage.removeItem("loggedIn");
+    window.location.href = "index.html";
 
   // Firebase Konfigurasi
   const firebaseConfig = {
@@ -289,10 +298,6 @@
       weatherIconEl.className = 'fa-solid fa-cloud';
     }
   });
-   function logout() {
-      localStorage.removeItem("loggedIn");
-      window.location.href = "index.html";
-    }
   // Voice Command Functionality
   function startSpeech() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
