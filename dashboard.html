@@ -248,15 +248,6 @@
 </div>
 
 <script>
-      // Cek apakah sudah login
-    if (localStorage.getItem("loggedIn") !== "true") {
-      window.location.href = "index.html";
-    }
-    // Logout saat tombol logout diklik
-  document.getElementById("btn-logout").addEventListener("click", function () {
-    localStorage.removeItem("loggedIn");
-    window.location.href = "index.html";
-
   // Firebase Konfigurasi
   const firebaseConfig = {
     apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
@@ -298,6 +289,16 @@
       weatherIconEl.className = 'fa-solid fa-cloud';
     }
   });
+
+      // Cek apakah sudah login
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "index.html";
+    }
+    // Logout saat tombol logout diklik
+  document.getElementById("btn-logout").addEventListener("click", function () {
+    localStorage.removeItem("loggedIn");
+    window.location.href = "index.html";
+  
   // Voice Command Functionality
   function startSpeech() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
