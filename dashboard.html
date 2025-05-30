@@ -249,6 +249,19 @@
 
   
 <script>
+    // Cek apakah sudah login
+
+  if (localStorage.getItem("loggedIn") !== "true") {
+    window.location.href = "index.html";
+    return;
+  }
+
+  // Cek status login
+  if (localStorage.getItem("loggedIn") !== "true") {
+    alert("Akses ditolak! Silakan login terlebih dahulu.");
+    window.location.href = "index.html"; // ganti dengan nama file login kamu
+  }
+
   // Firebase Konfigurasi
   const firebaseConfig = {
     apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
@@ -333,11 +346,7 @@
     dashboardPage.style.display = 'flex';
   });
   
-  // Cek apakah sudah login
-  if (localStorage.getItem("loggedIn") !== "true") {
-    window.location.href = "index.html";
-    return;
-  }
+
 
   // Fungsi logout
   function logout() {
