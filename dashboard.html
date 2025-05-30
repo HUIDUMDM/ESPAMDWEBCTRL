@@ -290,15 +290,7 @@
     }
   });
 
-      // Cek apakah sudah login
-    if (localStorage.getItem("loggedIn") !== "true") {
-      window.location.href = "index.html";
-    }
-    // Logout saat tombol logout diklik
-  document.getElementById("btn-logout").addEventListener("click", function () {
-    localStorage.removeItem("loggedIn");
-    window.location.href = "index.html";
-  
+
   // Voice Command Functionality
   function startSpeech() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -340,6 +332,15 @@
     lampPage.style.display = 'none';
     dashboardPage.style.display = 'flex';
   });
+          // Cek apakah sudah login
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "index.html";
+    }
+    // Logout saat tombol logout diklik
+  document.getElementById("btn-logout").addEventListener("click", function () {
+    localStorage.removeItem("loggedIn");
+    window.location.href = "index.html";
+   });
 </script>
 </body>
 </html>
