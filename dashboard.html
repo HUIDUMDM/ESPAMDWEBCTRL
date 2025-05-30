@@ -290,7 +290,10 @@
     }
   });
 
-
+function logout() {
+  localStorage.removeItem("loggedIn");
+  window.location.href = "index.html";
+}
   // Voice Command Functionality
   function startSpeech() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -337,7 +340,7 @@
     window.location.href = "index.html";
   }
     // Logout saat tombol logout diklik
-  document.getElementById("btn-logout").addEventListener("click", () => {
+  document.getElementById("btn-logout").addEventListener("click", logout) {
     localStorage.removeItem("loggedIn");
     window.location.href = "index.html";
    });
