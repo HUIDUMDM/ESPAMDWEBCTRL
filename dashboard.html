@@ -340,19 +340,10 @@ if (localStorage.getItem("loggedIn") !== "true") {
     lampPage.style.display = 'none';
     dashboardPage.style.display = 'flex';
   });
-  
-
-
-  // Fungsi logout
-  function logout() {
-    localStorage.removeItem("loggedIn");
-    window.location.href = "index.html";
-  }
-
-document.getElementById('btn-lamp').addEventListener('click', () => {
-  dashboardPage.style.display = 'none';
-  lampPage.style.display = 'flex';
-});
+      document.getElementById('btn-logout').addEventListener('click', () => {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "index.html";
+    });
 
   
 </script>
