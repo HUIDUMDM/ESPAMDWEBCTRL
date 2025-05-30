@@ -251,16 +251,11 @@
 <script>
     // Cek apakah sudah login
 
-  if (localStorage.getItem("loggedIn") !== "true") {
-    window.location.href = "index.html";
-    return;
-  }
+if (localStorage.getItem("loggedIn") !== "true") {
+  alert("Akses ditolak! Silakan login terlebih dahulu.");
+  window.location.href = "index.html";
+}
 
-  // Cek status login
-  if (localStorage.getItem("loggedIn") !== "true") {
-    alert("Akses ditolak! Silakan login terlebih dahulu.");
-    window.location.href = "index.html"; // ganti dengan nama file login kamu
-  }
 
   // Firebase Konfigurasi
   const firebaseConfig = {
@@ -354,8 +349,11 @@
     window.location.href = "index.html";
   }
 
-  // Tombol logout
-  document.getElementById("btn-logout").addEventListener("click", logout);
+document.getElementById('btn-lamp').addEventListener('click', () => {
+  dashboardPage.style.display = 'none';
+  lampPage.style.display = 'flex';
+});
+
   
 </script>
 </body>
