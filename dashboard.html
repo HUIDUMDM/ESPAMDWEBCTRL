@@ -323,7 +323,7 @@ if (localStorage.getItem("loggedIn") !== "true") {
 
   document.getElementById('btn-motor').addEventListener('click', () => {
     dashboardPage.style.display = 'none';
-    motorPage.style.display = 'flex';
+    window.location.href = "ctrl_mtr.html";
   });
 
   document.getElementById('btn-lamp').addEventListener('click', () => {
