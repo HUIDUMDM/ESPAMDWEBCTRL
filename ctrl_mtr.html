@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Kontrol Motor DC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(191, 0, 255, 0.30);
+
+text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            width: 300px;
+        }
+            .mtr-icon {
+            font-size: 100px;
+            margin: 20px;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .direction-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .direction-buttons button {
+            flex: 1;
+            max-width: 100px;
+        }
+
+        button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s;
+}
+
+
+
+        button:hover {
+            background-color: #0056b3;
+        }
+button:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+        input[type="range"] {
+            width: 80%;
+            margin-top: 15px;
+        }
+
+        .status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        #buka-tutup {
+            margin-top: 10px;
+            background-color: #28a745;
+        }
+
+        #buka-tutup:hover {
+            background-color: #1e7e34;
+        }
+
+        #kembali {
+            margin-top: 20px;
+            background-color: #6c757d;
+        }
+
+        #kembali:hover {
+            background-color: #495057;
+        }
+
+    </style>
+
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
+    authDomain: "espcontrolahmad.firebaseapp.com",
+    databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "espcontrolahmad",
+    storageBucket: "espcontrolahmad.appspot.com",
+    messagingSenderId: "333416906321",
+    appId: "1:333416906321:web:ad0a2188bb38fa09b2c270",
+    measurementId: "G-9RBGT0WHHE"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let kecepatanSlider, kecepatanLabel;
+let atapTerbuka = false;
+
+window.onload = function () {
+    kecepatanSlider = document.getElementById('kecepatan');
+    kecepatanLabel = document.getElementById('kecepatan-label');
+
+    kecepatanSlider.addEventListener('input', (event) => {
+        const kecepatan = event.target.value;
+        kecepatanLabel.innerText = `Kecepatan Motor: ${kecepatan}%`;
+        console.log(`Kecepatan motor: ${kecepatan}%`);
+
+        // Simpan ke Firebase
+        set(ref(db, 'motor/kecepatan'), kecepatan);
+    });
+
+    document.getElementById('kiri').addEventListener('click', () => {
+        console.log('Motor bergerak ke kiri');
+        set(ref(db, 'motor/arah'), 'kiri');
+    });
+
+    document.getElementById('kanan').addEventListener('click', () => {
+        console.log('Motor bergerak ke kanan');
+        set(ref(db, 'motor/arah'), 'kanan');
+    });
+
+    document.getElementById('stop').addEventListener('click', () => {
+        console.log('Motor berhenti');
+        set(ref(db, 'motor/arah'), 'stop');
+    });
+
+
+
+    document.getElementById('buka-tutup').addEventListener('click', () => {
+        atapTerbuka = !atapTerbuka;
+        const statusAtap = atapTerbuka ? 'Terbuka' : 'Tertutup';
+        document.getElementById('status-atap').innerText = `Status Atap: ${statusAtap}`;
+        document.getElementById('buka-tutup').innerText = atapTerbuka ? 'Tutup Atap' : 'Buka Atap';
+        console.log(`Atap ${statusAtap}`);
+
+        set(ref(db, 'atap/status'), statusAtap);
+    });
+
+    document.getElementById('kembali').addEventListener('click', () => {
+        location.href = 'index.html';
+    });
+};
+</script>
+
+</head>
+<body>
+    <div class="container">
+<h1>Smart Control Motor DC</h1>
+        <div class="motor-icon">
+            <div class="mtr-icon">🛞</div>
+        </div>
+        <div class="controls">
+            <div class="direction-buttons">
+                <button id="kiri">Kiri</button>
+                <button id="stop">Stop</button>
+                <button id="kanan">Kanan</button>
+            </div>
+
+            <button id="buka-tutup">Buka Atap</button>
+            <div class="status" id="status-atap">Status Atap: Tertutup</div>
+
+            <input type="range" id="kecepatan" min="0" max="100" value="50">
+            <div class="status" id="kecepatan-label">Kecepatan Motor: 50%</div>
+
+            <button id="kembali">← Kembali</button>
+        </div>
+    </div>
+</body>
+</html>
