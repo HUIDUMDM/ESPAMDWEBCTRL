@@ -306,7 +306,8 @@ if (localStorage.getItem("loggedIn") !== "true") {
     const recognition = new SpeechRecognition();
     recognition.lang = 'id-ID';
     recognition.onresult = function(event) {
-      const voiceText = event.results[0][0].transcript;
+     let voiceText = event.results[0][0].transcript;
+voiceText = voiceText.replace(/\.$/, ''); // menghapus titik di akhir saja
       document.getElementById('transcript-box').textContent = voiceText;
       db.ref('kontrol/voiceCommand').set(voiceText);
     };
