@@ -2,41 +2,46 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>LOGIN ESPAHMAD</title>
-  <link rel="icon" href="images/favic.png" type="image/png">
+  <title>amdctrl - Sistem Kontrol ESP oleh Kelompok 1</title>
+  <meta name="description" content="amdctrl adalah sistem kontrol berbasis web untuk ESP8266/ESP32 yang dibuat oleh Kelompok 1. Akses dan kelola perangkat ESP Anda melalui web secara aman.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Tambahkan tag verifikasi Google Search Console di bawah ini -->
+  <!-- <meta name="google-site-verification" content="ISI-DENGAN-KODE-DARI-GOOGLE" /> -->
+  <link rel="icon" href="images/favic.png" type="image/png">
   <style>
-   * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-html, body {
-  height: 100%;
-}
+    html, body {
+      height: 100%;
+    }
 
-body {
-  min-height: 100vh;
-  background-image: url('images/BACK.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: white;
-  display: flex;
-  flex-direction: column;
-}
+    body {
+      min-height: 100vh;
+      background-image: url('images/BACK.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
 
     .login-box {
       max-width: 400px;
-      margin: 100px auto;
       padding: 20px;
       border: 1px solid #00ffe7;
       background-color: rgba(0, 0, 0, 0.6);
       border-radius: 10px;
       text-align: center;
     }
+
     input[type=text], input[type=password] {
       width: 90%;
       padding: 10px;
@@ -44,6 +49,7 @@ body {
       border: none;
       border-radius: 5px;
     }
+
     button {
       padding: 10px 20px;
       border-radius: 5px;
@@ -53,17 +59,24 @@ body {
       cursor: pointer;
       margin: 5px;
     }
+
+    .branding {
+      margin-bottom: 15px;
+      font-size: 14px;
+      color: #ccc;
+    }
   </style>
 </head>
 <body>
   <div class="login-box">
+    <div class="branding">Sistem Web Kontrol ESP - <strong>amdctrl</strong></div>
     <h2>LOGIN BY KELOMPOK 1</h2>
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login</button>
   </div>
-  <script>
 
+  <script>
     function login() {
       const user = document.getElementById('username').value;
       const pass = document.getElementById('password').value;
@@ -71,10 +84,9 @@ body {
         localStorage.setItem("loggedIn", "true");
         window.location.href = 'dashboard.html';
       } else {
-        alert('Login gagal! usser/pass salah');
+        alert('Login gagal! username/password salah');
       }
     }
   </script>
 </body>
 </html>
-
