@@ -1,4 +1,0 @@
-https://huidumdm.github.io/ESPAMDWEBCTRL/index.html
-https://huidumdm.github.io/ESPAMDWEBCTRL/dashboard.html
-https://huidumdm.github.io/ESPAMDWEBCTRL/ctrl_lamp.html
-https://huidumdm.github.io/ESPAMDWEBCTRL/ctrl_mtr.html
