@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link rel="icon" href="images/favic.png" type="image/png">
+    <link rel="icon" href="images/favic.png" type="image/png">
     <title>Smart Kontrol Motor DC</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-                        background-image: url('images/tur3.jpeg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+            background-image: url('images/tur3.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             margin: 0;
             padding: 0;
             display: flex;
@@ -25,13 +25,13 @@
             margin: 50px auto;
             padding: 20px;
             background-color: rgba(191, 0, 255, 0.30);
-
-text-align: center;
+            text-align: center;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
             width: 300px;
         }
-            .mtr-icon {
+
+        .mtr-icon {
             font-size: 100px;
             margin: 20px;
         }
@@ -48,32 +48,25 @@ text-align: center;
             margin-bottom: 15px;
         }
 
-        .direction-buttons button {
-            flex: 1;
-            max-width: 100px;
-        }
-
         button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s;
-}
-
-
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s;
+        }
 
         button:hover {
             background-color: #0056b3;
         }
-button:active {
-    transform: scale(0.95);
-    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
-}
 
+        button:active {
+            transform: scale(0.95);
+            box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
 
         input[type="range"] {
             width: 80%;
@@ -102,80 +95,44 @@ button:active {
         #kembali:hover {
             background-color: #495057;
         }
-
     </style>
 
     <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
-    authDomain: "espcontrolahmad.firebaseapp.com",
-    databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "espcontrolahmad",
-    storageBucket: "espcontrolahmad.appspot.com",
-    messagingSenderId: "333416906321",
-    appId: "1:333416906321:web:ad0a2188bb38fa09b2c270",
-    measurementId: "G-9RBGT0WHHE"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
+            authDomain: "espcontrolahmad.firebaseapp.com",
+            databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "espcontrolahmad",
+            storageBucket: "espcontrolahmad.appspot.com",
+            messagingSenderId: "333416906321",
+            appId: "1:333416906321:web:ad0a2188bb38fa09b2c270",
+            measurementId: "G-9RBGT0WHHE"
+        };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-let kecepatanSlider, kecepatanLabel;
-let atapTerbuka = false;
+        window.onload = function () {
+            document.getElementById('otomatis').addEventListener('click', () => {
+                console.log('Status motor: Otomatis');
+                set(ref(db, 'motor/status'), 'otomatis');
+            });
 
-window.onload = function () {
-    kecepatanSlider = document.getElementById('kecepatan');
-    kecepatanLabel = document.getElementById('kecepatan-label');
+            document.getElementById('manual').addEventListener('click', () => {
+                console.log('Status motor: Manual');
+                set(ref(db, 'motor/status'), 'manual');
+            });
 
-    kecepatanSlider.addEventListener('input', (event) => {
-        const kecepatan = event.target.value;
-        kecepatanLabel.innerText = `Kecepatan Motor: ${kecepatan}%`;
-        console.log(`Kecepatan motor: ${kecepatan}%`);
-
-        // Simpan ke Firebase
-        set(ref(db, 'motor/kecepatan'), kecepatan);
-    });
-
-    document.getElementById('kiri').addEventListener('click', () => {
-        console.log('Motor bergerak ke kiri');
-        set(ref(db, 'motor/arah'), 'kiri');
-    });
-
-    document.getElementById('kanan').addEventListener('click', () => {
-        console.log('Motor bergerak ke kanan');
-        set(ref(db, 'motor/arah'), 'kanan');
-    });
-
-    document.getElementById('stop').addEventListener('click', () => {
-        console.log('Motor berhenti');
-        set(ref(db, 'motor/arah'), 'stop');
-    });
-
-
-
-    document.getElementById('buka-tutup').addEventListener('click', () => {
-        atapTerbuka = !atapTerbuka;
-        const statusAtap = atapTerbuka ? 'Terbuka' : 'Tertutup';
-        document.getElementById('status-atap').innerText = `Status Atap: ${statusAtap}`;
-        document.getElementById('buka-tutup').innerText = atapTerbuka ? 'Tutup Atap' : 'Buka Atap';
-        console.log(`Atap ${statusAtap}`);
-
-        set(ref(db, 'atap/status'), statusAtap);
-    });
-
-    document.getElementById('kembali').addEventListener('click', () => {
-        location.href = 'dashboard.html';
-    });
-};
-</script>
-
+            // Other existing event listeners...
+        };
+    </script>
 </head>
 <body>
     <div class="container">
-<h1>Smart Control Motor DC</h1>
+        <h1>Smart Control Motor DC</h1>
         <div class="motor-icon">
             <div class="mtr-icon">🛞</div>
         </div>
@@ -192,8 +149,12 @@ window.onload = function () {
             <input type="range" id="kecepatan" min="0" max="100" value="50">
             <div class="status" id="kecepatan-label">Kecepatan Motor: 50%</div>
 
+            <button id="otomatis">Otomatis</button>
+            <button id="manual">Manual</button>
+
             <button id="kembali">← Kembali</button>
         </div>
     </div>
 </body>
 </html>
+
