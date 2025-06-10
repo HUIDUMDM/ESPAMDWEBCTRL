@@ -1,160 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="images/favic.png" type="image/png">
-    <title>Smart Kontrol Motor DC</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-image: url('images/tur3.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Kontrol Motor DC</title>
+  <link rel="icon" href="images/favic.png" type="image/png" />
+  <style>
+    /* Default Design Guidelines Applied */
 
-        .container {
-            margin: 50px auto;
-            padding: 20px;
-            background-color: rgba(191, 0, 255, 0.30);
-            text-align: center;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-            width: 300px;
-        }
+    /* Reset & base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      color: #6b7280;
+      font-family: 'Inter', Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 4rem 1rem;
+    }
 
-        .mtr-icon {
-            font-size: 100px;
-            margin: 20px;
-        }
+    .container {
+      background-color: #fafafa;
+      max-width: 600px;
+      width: 100%;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 6px rgb(0 0 0 / 0.1);
+      padding: 3rem 2.5rem;
+      text-align: center;
+      user-select: none;
+    }
 
-        .controls {
-            margin-top: 20px;
-        }
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 0 0 1rem;
+      color: #111827;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    }
 
-        .direction-buttons {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 15px;
-        }
+    .motor-icon {
+      font-size: 5rem;
+      margin-bottom: 2rem;
+      color: #4b5563;
+      user-select: none;
+    }
 
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s;
-        }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: center;
+    }
 
-        button:hover {
-            background-color: #0056b3;
-        }
+    /* Buttons container for multiple buttons inline */
+    .direction-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      width: 100%;
+      max-width: 400px;
+    }
 
-        button:active {
-            transform: scale(0.95);
-            box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
-        }
+    button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      border: 1px solid transparent;
+      background-color: #111827;
+      color: #fff;
+      cursor: pointer;
+      flex: 1 1 100px;
+      min-width: 100px;
+      transition: background-color 0.3s ease, transform 0.15s ease, box-shadow 0.15s ease;
+      user-select: none;
+    }
 
-        input[type="range"] {
-            width: 80%;
-            margin-top: 15px;
-        }
+    button:hover {
+      background-color: #374151;
+      box-shadow: 0 0 8px rgb(55 65 81 / 0.5);
+      transform: scale(1.03);
+    }
 
-        .status {
-            margin-top: 10px;
-            font-weight: bold;
-        }
+    button:active {
+      transform: scale(0.97);
+      box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.3);
+    }
 
-        #buka-tutup {
-            margin-top: 10px;
-            background-color: #28a745;
-        }
+    /* Special button colors */
+    #buka-tutup {
+      background-color: #10b981; /* emerald */
+      border-color: #059669;
+      color: white;
+    }
 
-        #buka-tutup:hover {
-            background-color: #1e7e34;
-        }
+    #buka-tutup:hover {
+      background-color: #059669;
+      box-shadow: 0 0 8px rgb(5 150 105 / 0.7);
+    }
 
-        #kembali {
-            margin-top: 20px;
-            background-color: #6c757d;
-        }
+    #kembali {
+      background-color: #6b7280;
+      border-color: #4b5563;
+      color: white;
+      margin-top: 2rem;
+      max-width: 200px;
+    }
 
-        #kembali:hover {
-            background-color: #495057;
-        }
-    </style>
+    #kembali:hover {
+      background-color: #4b5563;
+      box-shadow: 0 0 8px rgb(75 85 99 / 0.6);
+    }
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+    /* Status text */
+    .status {
+      color: #374151;
+      font-weight: 600;
+      font-size: 1rem;
+      min-height: 1.25em;
+      user-select: none;
+    }
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
-            authDomain: "espcontrolahmad.firebaseapp.com",
-            databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "espcontrolahmad",
-            storageBucket: "espcontrolahmad.appspot.com",
-            messagingSenderId: "333416906321",
-            appId: "1:333416906321:web:ad0a2188bb38fa09b2c270",
-            measurementId: "G-9RBGT0WHHE"
-        };
+    /* Range slider styling */
+    input[type="range"] {
+      width: 80%;
+      margin-top: 0.5rem;
+      -webkit-appearance: none;
+      height: 8px;
+      border-radius: 9999px;
+      background: #d1d5db;
+      cursor: pointer;
+    }
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #111827;
+      cursor: pointer;
+      border: 2px solid #6b7280;
+      transition: background-color 0.3s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background-color: #374151;
+    }
 
-        window.onload = function () {
-            document.getElementById('otomatis').addEventListener('click', () => {
-                console.log('Status motor: Otomatis');
-                set(ref(db, 'motor/status'), 'otomatis');
-            });
+    input[type="range"]:focus::-webkit-slider-thumb {
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.4);
+      outline: none;
+    }
 
-            document.getElementById('manual').addEventListener('click', () => {
-                console.log('Status motor: Manual');
-                set(ref(db, 'motor/status'), 'manual');
-            });
+    /* Responsive scalability */
+    @media (max-width: 480px) {
+      .container {
+        padding: 2rem 1rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      button {
+        min-width: 80px;
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+      }
+    }
+  </style>
 
-            // Other existing event listeners...
-        };
-    </script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDW-rf3Vy-Ti2Dpn3tpCWlb1E-XshMncT8",
+      authDomain: "espcontrolahmad.firebaseapp.com",
+      databaseURL: "https://espcontrolahmad-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "espcontrolahmad",
+      storageBucket: "espcontrolahmad.appspot.com",
+      messagingSenderId: "333416906321",
+      appId: "1:333416906321:web:ad0a2188bb38fa09b2c270",
+      measurementId: "G-9RBGT0WHHE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let atapTerbuka = false;
+
+    window.onload = function () {
+      const kecepatanSlider = document.getElementById('kecepatan');
+      const kecepatanLabel = document.getElementById('kecepatan-label');
+
+      kecepatanSlider.addEventListener('input', (event) => {
+        const kecepatan = event.target.value;
+        kecepatanLabel.innerText = `Kecepatan Motor: ${kecepatan}%`;
+        console.log(`Kecepatan motor: ${kecepatan}%`);
+
+        // Simpan ke Firebase
+        set(ref(db, 'motor/kecepatan'), kecepatan);
+      });
+
+      document.getElementById('kiri').addEventListener('click', () => {
+        console.log('Motor bergerak ke kiri');
+        set(ref(db, 'motor/arah'), 'kiri');
+      });
+
+      document.getElementById('kanan').addEventListener('click', () => {
+        console.log('Motor bergerak ke kanan');
+        set(ref(db, 'motor/arah'), 'kanan');
+      });
+
+      document.getElementById('stop').addEventListener('click', () => {
+        console.log('Motor berhenti');
+        set(ref(db, 'motor/arah'), 'stop');
+      });
+
+      document.getElementById('buka-tutup').addEventListener('click', () => {
+        atapTerbuka = !atapTerbuka;
+        const statusAtap = atapTerbuka ? 'Terbuka' : 'Tertutup';
+        document.getElementById('status-atap').innerText = `Status Atap: ${statusAtap}`;
+        document.getElementById('buka-tutup').innerText = atapTerbuka ? 'Tutup Atap' : 'Buka Atap';
+        console.log(`Atap ${statusAtap}`);
+
+        set(ref(db, 'atap/status'), statusAtap);
+      });
+
+      document.getElementById('kembali').addEventListener('click', () => {
+        location.href = 'dashboard.html';
+      });
+
+      // New "otomatis" and "manual" buttons event listeners
+      document.getElementById('otomatis').addEventListener('click', () => {
+        console.log('Status motor: Otomatis');
+        set(ref(db, 'motor/status'), 'otomatis');
+      });
+
+      document.getElementById('manual').addEventListener('click', () => {
+        console.log('Status motor: Manual');
+        set(ref(db, 'motor/status'), 'manual');
+      });
+    };
+  </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Smart Control Motor DC</h1>
-        <div class="motor-icon">
-            <div class="mtr-icon">🛞</div>
-        </div>
-        <div class="controls">
-            <div class="direction-buttons">
-                <button id="kiri">Kiri</button>
-                <button id="stop">Stop</button>
-                <button id="kanan">Kanan</button>
-            </div>
+  <div class="container" role="main" aria-label="Smart Control Motor DC">
+    <h1>Smart Control Motor DC</h1>
+    <div class="motor-icon" aria-hidden="true">🛞</div>
 
-            <button id="buka-tutup">Buka Atap</button>
-            <div class="status" id="status-atap">Status Atap: Tertutup</div>
+    <div class="controls" role="region" aria-label="Motor controls">
+      <div class="direction-buttons" role="group" aria-label="Motor direction controls">
+        <button id="kiri" type="button" aria-pressed="false">Kiri</button>
+        <button id="stop" type="button" aria-pressed="false">Stop</button>
+        <button id="kanan" type="button" aria-pressed="false">Kanan</button>
+      </div>
 
-            <input type="range" id="kecepatan" min="0" max="100" value="50">
-            <div class="status" id="kecepatan-label">Kecepatan Motor: 50%</div>
+      <button id="buka-tutup" type="button" aria-pressed="false">Buka Atap</button>
+      <div class="status" id="status-atap" aria-live="polite">Status Atap: Tertutup</div>
 
-            <button id="otomatis">Otomatis</button>
-            <button id="manual">Manual</button>
+      <input type="range" id="kecepatan" min="0" max="100" value="50" aria-label="Kecepatan motor" />
+      <div class="status" id="kecepatan-label" aria-live="polite">Kecepatan Motor: 50%</div>
 
-            <button id="kembali">← Kembali</button>
-        </div>
+      <!-- New buttons for otomatis and manual statuses -->
+      <div class="direction-buttons" role="group" aria-label="Motor operation mode controls">
+        <button id="otomatis" type="button" aria-pressed="false">Otomatis</button>
+        <button id="manual" type="button" aria-pressed="false">Manual</button>
+      </div>
+
+      <button id="kembali" type="button">← Kembali</button>
     </div>
+  </div>
 </body>
 </html>
+
+
 
