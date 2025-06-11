@@ -6,9 +6,6 @@
   <title>Smart Kontrol Motor DC</title>
   <link rel="icon" href="images/favic.png" type="image/png" />
   <style>
-    /* Default Design Guidelines Applied */
-
-    /* Reset & base */
     *, *::before, *::after {
       box-sizing: border-box;
     }
@@ -61,7 +58,6 @@
       align-items: center;
     }
 
-    /* Buttons container for multiple buttons inline */
     .direction-buttons {
       display: flex;
       gap: 1rem;
@@ -97,9 +93,8 @@
       box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.3);
     }
 
-    /* Special button colors */
     #buka-tutup {
-      background-color: #10b981; /* emerald */
+      background-color: #10b981;
       border-color: #059669;
       color: white;
     }
@@ -122,7 +117,6 @@
       box-shadow: 0 0 8px rgb(75 85 99 / 0.6);
     }
 
-    /* Status text */
     .status {
       color: #374151;
       font-weight: 600;
@@ -131,7 +125,6 @@
       user-select: none;
     }
 
-    /* Range slider styling */
     input[type="range"] {
       width: 80%;
       margin-top: 0.5rem;
@@ -153,6 +146,7 @@
       border: 2px solid #6b7280;
       transition: background-color 0.3s ease;
     }
+
     input[type="range"]::-webkit-slider-thumb:hover {
       background-color: #374151;
     }
@@ -162,7 +156,6 @@
       outline: none;
     }
 
-    /* Responsive scalability */
     @media (max-width: 480px) {
       .container {
         padding: 2rem 1rem;
@@ -195,7 +188,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
     let atapTerbuka = false;
 
     window.onload = function () {
@@ -206,8 +198,6 @@
         const kecepatan = event.target.value;
         kecepatanLabel.innerText = `Kecepatan Motor: ${kecepatan}%`;
         console.log(`Kecepatan motor: ${kecepatan}%`);
-
-        // Simpan ke Firebase
         set(ref(db, 'motor/kecepatan'), kecepatan);
       });
 
@@ -218,44 +208,44 @@
         document.getElementById('buka-tutup').innerText = atapTerbuka ? 'Tutup Atap' : 'Buka Atap';
         console.log(`Atap ${statusAtap}`);
 
-        set(ref(db, 'atap/status'), statusAtap);
+        const cmd = atapTerbuka ? 'buka atap' : 'tutup atap';
+        set(ref(db, 'motor/status'), 'manual');
+        set(ref(db, 'kontrol/voiceCommand'), cmd);
       });
 
-      document.getElementById('kembali').addEventListener('click', () => {
-        location.href = 'dashboard.html';
-      });
-
-      // New "otomatis" and "manual" buttons event listeners
       document.getElementById('otomatis').addEventListener('click', () => {
         console.log('Status motor: Otomatis');
         set(ref(db, 'motor/status'), 'otomatis');
+        set(ref(db, 'kontrol/voiceCommand'), '');
       });
 
       document.getElementById('manual').addEventListener('click', () => {
         console.log('Status motor: Manual');
         set(ref(db, 'motor/status'), 'manual');
+        set(ref(db, 'kontrol/voiceCommand'), '');
+      });
+
+      document.getElementById('kembali').addEventListener('click', () => {
+        location.href = 'dashboard.html';
       });
     };
   </script>
 </head>
 <body>
-  <div class="container" role="main" aria-label="Smart Control Motor DC">
+  <div class="container">
     <h1>Smart Control Motor DC</h1>
-    <div class="motor-icon" aria-hidden="true">🛞</div>
+    <div class="motor-icon">🛞</div>
 
-    <div class="controls" role="region" aria-label="Motor controls">
-      
+    <div class="controls">
+      <button id="buka-tutup" type="button">Buka Atap</button>
+      <div class="status" id="status-atap">Status Atap: Tertutup</div>
 
-      <button id="buka-tutup" type="button" aria-pressed="false">Buka Atap</button>
-      <div class="status" id="status-atap" aria-live="polite">Status Atap: Tertutup</div>
+      <input type="range" id="kecepatan" min="0" max="100" value="50" />
+      <div class="status" id="kecepatan-label">Kecepatan Motor: 50%</div>
 
-      <input type="range" id="kecepatan" min="0" max="100" value="50" aria-label="Kecepatan motor" />
-      <div class="status" id="kecepatan-label" aria-live="polite">Kecepatan Motor: 50%</div>
-
-      <!-- New buttons for otomatis and manual statuses -->
-      <div class="direction-buttons" role="group" aria-label="Motor operation mode controls">
-        <button id="otomatis" type="button" aria-pressed="false">Otomatis</button>
-        <button id="manual" type="button" aria-pressed="false">Manual</button>
+      <div class="direction-buttons">
+        <button id="otomatis" type="button">Otomatis</button>
+        <button id="manual" type="button">Manual</button>
       </div>
 
       <button id="kembali" type="button">← Kembali</button>
@@ -263,6 +253,7 @@
   </div>
 </body>
 </html>
+
 
 
 
