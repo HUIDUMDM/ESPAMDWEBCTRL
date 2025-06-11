@@ -211,21 +211,6 @@
         set(ref(db, 'motor/kecepatan'), kecepatan);
       });
 
-      document.getElementById('kiri').addEventListener('click', () => {
-        console.log('Motor bergerak ke kiri');
-        set(ref(db, 'motor/arah'), 'kiri');
-      });
-
-      document.getElementById('kanan').addEventListener('click', () => {
-        console.log('Motor bergerak ke kanan');
-        set(ref(db, 'motor/arah'), 'kanan');
-      });
-
-      document.getElementById('stop').addEventListener('click', () => {
-        console.log('Motor berhenti');
-        set(ref(db, 'motor/arah'), 'stop');
-      });
-
       document.getElementById('buka-tutup').addEventListener('click', () => {
         atapTerbuka = !atapTerbuka;
         const statusAtap = atapTerbuka ? 'Terbuka' : 'Tertutup';
@@ -259,11 +244,7 @@
     <div class="motor-icon" aria-hidden="true">🛞</div>
 
     <div class="controls" role="region" aria-label="Motor controls">
-      <div class="direction-buttons" role="group" aria-label="Motor direction controls">
-        <button id="kiri" type="button" aria-pressed="false">Kiri</button>
-        <button id="stop" type="button" aria-pressed="false">Stop</button>
-        <button id="kanan" type="button" aria-pressed="false">Kanan</button>
-      </div>
+      
 
       <button id="buka-tutup" type="button" aria-pressed="false">Buka Atap</button>
       <div class="status" id="status-atap" aria-live="polite">Status Atap: Tertutup</div>
@@ -282,6 +263,7 @@
   </div>
 </body>
 </html>
+
 
 
 
